@@ -21,17 +21,29 @@
             overflow: hidden;
             background: #1e1b2e;
             font-family: 'Quicksand', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         #game-container {
             position: relative;
             width: 100%;
             height: 100%;
-            max-width: 480px;
-            max-height: 850px;
-            margin: 0 auto;
+            background: #1e1b2e;
             box-shadow: 0 10px 40px rgba(0,0,0,0.5);
             overflow: hidden;
+        }
+
+        /* Responsive arcade framing for iPads and Laptops */
+        @media (min-width: 768px) {
+            #game-container {
+                width: 420px;
+                height: 820px;
+                max-height: 92vh;
+                border-radius: 32px;
+                border: 4px solid rgba(255, 255, 255, 0.25);
+            }
         }
 
         canvas {
