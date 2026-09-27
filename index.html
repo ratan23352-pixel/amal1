@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Amal's Flight 🌸✨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #1e1b2e;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            max-width: 480px;
+            max-height: 850px;
+            margin: 0 auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: opacity 0.3s ease;
+            z-index: 10;
+        }
+
+        .screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 18px 18px;
+            border-radius: 35px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(244, 114, 182, 0.25);
+            border: 3px solid rgba(255, 255, 255, 1);
+            width: 90%;
+            max-width: 360px;
+            animation: floatCard 4s ease-in-out infinite;
+        }
+
+        @keyframes floatCard {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        h1 {
+            color: #db2777;
+            font-size: 24px;
+            margin: 0 0 8px 0;
+            letter-spacing: 1px;
+        }
+
+        .avatar-frame {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            border: 4px solid #f472b6;
+            overflow: hidden;
+            margin: 0 auto 8px auto;
+            box-shadow: 0 8px 25px rgba(244, 114, 182, 0.35);
+            background: #fff;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .avatar-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-fallback {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #f472b6;
+            color: white;
+            font-size: 26px;
+            font-weight: 700;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .customization-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .custom-badge-btn {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #f472b6;
+            border-radius: 12px;
+            padding: 7px 4px;
+            font-size: 10px;
+            font-weight: 700;
+            color: #db2777;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(244, 114, 182, 0.15);
+            transition: transform 0.1s;
+        }
+
+        .custom-badge-btn:active { transform: scale(0.94); }
+
+        .score-display {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .score-number {
+            color: #db2777;
+            font-size: 16px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #f472b6 0%, #fb7185 100%);
+            color: white;
+            border: none;
+            padding: 11px 22px;
+            font-size: 15px;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(244, 114, 182, 0.4);
+            transition: transform 0.1s ease;
+            width: 100%;
+            margin-top: 5px;
+            letter-spacing: 1px;
+        }
+
+        #play-btn, #restart-btn {
+            animation: pulseBtn 2s infinite;
+        }
+
+        @keyframes pulseBtn {
+            0% { box-shadow: 0 0 0 0 rgba(244, 114, 182, 0.6); }
+            70% { box-shadow: 0 0 0 12px rgba(244, 114, 182, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(244, 114, 182, 0); }
+        }
+
+        .btn:active { transform: scale(0.95); }
+        .btn-secondary { background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%); }
+        .btn-accent { background: linear-gradient(135deg, #a7f3d0 0%, #3b82f6 100%); }
+
+        .upload-label {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 11px;
+            color: #db2777;
+            cursor: pointer;
+            text-decoration: underline;
+            font-weight: 700;
+            opacity: 0.8;
+        }
+        #upload-input { display: none; }
+
+        #hud {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .hud-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(4px);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            color: #4b5563;
+            font-size: 15px;
+            border: 2px solid rgba(255,255,255,0.8);
+            pointer-events: auto;
+        }
+
+        .hud-card span { color: #db2777; }
+        .hud-buttons { display: flex; gap: 10px; pointer-events: auto; }
+
+        .icon-btn {
+            background: rgba(255, 255, 255, 0.85);
+            border: 2px solid rgba(255,255,255,0.8);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #db2777;
+        }
+        .icon-btn:active { transform: scale(0.90); }
+
+        .new-best-badge {
+            background: #fef08a;
+            color: #ca8a04;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="hud" class="hidden">
+        <div class="hud-card">Score: <span id="current-score">0</span></div>
+        <div class="hud-buttons">
+            <button id="music-toggle-btn" class="icon-btn" title="Toggle Music">🎵</button>
+            <button id="pause-btn" class="icon-btn" title="Pause">⏸</button>
+        </div>
+        <div class="hud-card">Best: <span id="hud-best">0</span></div>
+    </div>
+
+    <!-- Main Menu -->
+    <div id="menu-screen" class="screen">
+        <div class="panel">
+            <h1>Amal's Flight 🌸</h1>
+            <div class="avatar-frame" id="avatar-container" title="Click to change hat!">
+                <img id="avatar-preview" src="amal.jpg" alt="Amal" onerror="this.style.display='none'; document.getElementById('avatar-fallback').style.display='flex';">
+                <div id="avatar-fallback" class="avatar-fallback">🌸</div>
+            </div>
+            
+            <div class="customization-grid">
+                <button class="custom-badge-btn" id="hat-picker-btn">👑 Hat: None</button>
+                <button class="custom-badge-btn" id="pet-picker-btn">🐾 Pet: Star</button>
+                <button class="custom-badge-btn" id="trail-picker-btn">✨ Trail: Glitter</button>
+                <button class="custom-badge-btn" id="theme-picker-btn">🎨 Theme: Pink</button>
+            </div>
+
+            <div class="score-display">Total Stars: <span class="score-number" id="total-stars-display">0</span> | Best: <span class="score-number" id="menu-best">0</span></div>
+            <button class="btn" id="play-btn">PLAY 🚀</button>
+            <br>
+            <label class="upload-label">
+                Upload Custom Photo
+                <input type="file" id="upload-input" accept="image/*">
+            </label>
+        </div>
+    </div>
+
+    <!-- Pause Screen -->
+    <div id="pause-screen" class="screen hidden">
+        <div class="panel">
+            <h1>Paused ☕</h1>
+            <button class="btn" id="resume-btn">RESUME</button>
+            <button class="btn btn-secondary" id="pause-menu-btn">MAIN MENU</button>
+        </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="game-over-screen" class="screen hidden">
+        <div class="panel">
+            <h1>Oh no! 🌸</h1>
+            <div id="new-best-container"></div>
+            <div class="score-display">
+                Score: <span class="score-number" id="final-score">0</span><br>
+                Best Score: <span class="score-number" id="final-best">0</span>
+            </div>
+            <button class="btn" id="restart-btn">PLAY AGAIN</button>
+            <button class="btn btn-accent" id="snapshot-btn">SAVE KEEPSAKE 📸</button>
+            <button class="btn btn-secondary" id="gameover-menu-btn">MAIN MENU</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d', { alpha: false });
+
+    const menuScreen = document.getElementById('menu-screen');
+    const hud = document.getElementById('hud');
+    const pauseScreen = document.getElementById('pause-screen');
+    const gameOverScreen = document.getElementById('game-over-screen');
+    const playBtn = document.getElementById('play-btn');
+    const resumeBtn = document.getElementById('resume-btn');
+    const pauseMenuBtn = document.getElementById('pause-menu-btn');
+    const restartBtn = document.getElementById('restart-btn');
+    const gameOverMenuBtn = document.getElementById('gameover-menu-btn');
+    const pauseBtn = document.getElementById('pause-btn');
+    const musicToggleBtn = document.getElementById('music-toggle-btn');
+    const snapshotBtn = document.getElementById('snapshot-btn');
+    const uploadInput = document.getElementById('upload-input');
+    const avatarPreview = document.getElementById('avatar-preview');
+    const avatarContainer = document.getElementById('avatar-container');
+    
+    const hatPickerBtn = document.getElementById('hat-picker-btn');
+    const petPickerBtn = document.getElementById('pet-picker-btn');
+    const trailPickerBtn = document.getElementById('trail-picker-btn');
+    const themePickerBtn = document.getElementById('theme-picker-btn');
+
+    const currentScoreEl = document.getElementById('current-score');
+    const hudBestEl = document.getElementById('hud-best');
+    const menuBestEl = document.getElementById('menu-best');
+    const totalStarsDisplayEl = document.getElementById('total-stars-display');
+    const finalScoreEl = document.getElementById('final-score');
+    const finalBestEl = document.getElementById('final-best');
+    const newBestContainer = document.getElementById('new-best-container');
+
+    const STATE_MENU = 0, STATE_PLAYING = 1, STATE_PAUSED = 2, STATE_GAMEOVER = 3;
+    let gameState = STATE_MENU;
+
+    let bestScore = localStorage.getItem('amals_flight_best') || 0;
+    let totalStarsCollected = parseInt(localStorage.getItem('amals_flight_total_stars') || '0');
+    menuBestEl.textContent = bestScore;
+    hudBestEl.textContent = bestScore;
+    totalStarsDisplayEl.textContent = totalStarsCollected;
+
+    // Customization & Unlocks
+    const hats = ['none', 'crown', 'bunny', 'flowers', 'goggles', 'angel', 'cat'];
+    const hatNames = { 'none': 'None', 'crown': 'Crown 👑', 'bunny': 'Bunny 🐰', 'flowers': 'Floral 🌺', 'goggles': 'Goggles ✈️', 'angel': 'Angel 🪽', 'cat': 'Cat 🐱' };
+    let currentHatIndex = 0;
+
+    const pets = ['star', 'bunny', 'cloud', 'ghost'];
+    const petNames = { 'star': 'Star ⭐', 'bunny': 'Bunny 🐰', 'cloud': 'Cloud ☁️', 'ghost': 'Ghost 👻' };
+    let currentPetIndex = 0;
+
+    const trails = ['glitter', 'notes', 'hearts', 'rainbow'];
+    const trailNames = { 'glitter': 'Glitter 🌟', 'notes': 'Notes 🎵', 'hearts': 'Hearts 💖', 'rainbow': 'Rainbow 🌈' };
+    let currentTrailIndex = 0;
+
+    const themes = ['pink', 'mint', 'sunset', 'midnight'];
+    const themeNames = { 'pink': 'Pink 🌸', 'mint': 'Mint 🌿', 'sunset': 'Sunset 🌅', 'midnight': 'Midnight 🌙' };
+    let currentThemeIndex = 0;
+
+    hatPickerBtn.addEventListener('click', () => {
+        while (true) {
+            currentHatIndex = (currentHatIndex + 1) % hats.length;
+            let h = hats[currentHatIndex];
+            if (h === 'angel' && totalStarsCollected < 25) continue;
+            if (h === 'cat' && totalStarsCollected < 50) continue;
+            break;
+        }
+        let hKey = hats[currentHatIndex];
+        let label = hatNames[hKey];
+        if (hKey === 'angel' && totalStarsCollected < 25) label += ' (Req 25⭐)';
+        if (hKey === 'cat' && totalStarsCollected < 50) label += ' (Req 50⭐)';
+        hatPickerBtn.textContent = `👑 Hat: ${label}`;
+    });
+
+    petPickerBtn.addEventListener('click', () => {
+        currentPetIndex = (currentPetIndex + 1) % pets.length;
+        petPickerBtn.textContent = `🐾 Pet: ${petNames[pets[currentPetIndex]]}`;
+        triggerCompanionReaction();
+    });
+
+    trailPickerBtn.addEventListener('click', () => {
+        currentTrailIndex = (currentTrailIndex + 1) % trails.length;
+        trailPickerBtn.textContent = `✨ Trail: ${trailNames[trails[currentTrailIndex]]}`;
+    });
+
+    themePickerBtn.addEventListener('click', () => {
+        currentThemeIndex = (currentThemeIndex + 1) % themes.length;
+        themePickerBtn.textContent = `🎨 Theme: ${themeNames[themes[currentThemeIndex]]}`;
+    });
+
+    avatarContainer.addEventListener('click', () => {
+        triggerCompanionReaction();
+    });
+
+    let characterImg = new Image();
+    characterImg.src = avatarPreview.src;
+    
+    uploadInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                characterImg.src = event.target.result;
+                avatarPreview.src = event.target.result;
+                avatarPreview.style.display = 'block';
+                document.getElementById('avatar-fallback').style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    function resize() {
+        const container = document.getElementById('game-container');
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+        initEnvironment();
+    }
+    window.addEventListener('resize', resize);
+
+    let score = 0;
+    let gravity = 0.38;
+    let lift = -7.2;
+    let gameSpeed = 3.2;
+    let bgOffset = 0;
+
+    let bird = { x: 85, y: 400, radius: 26, velocity: 0, rotation: 0, hasShield: false, magnetTimer: 0, blinkTimer: 0, isBlinking: false };
+    let petPos = { x: 45, y: 400 };
+    let petReactionTimer = 0;
+
+    let pipes = [], items = [];
+    let pipeWidth = 64, pipeGap = 175, pipeTimer = 0;
+
+    let particles = [], ambientBubbles = [], sakuraPetals = [], backgroundStars = [], shootingStars = [], floatingPopups = [];
+    let consecutiveStars = 0, feverTimer = 0;
+
+    function initEnvironment() {
+        ambientBubbles = [];
+        for (let i = 0; i < 10; i++) {
+            ambientBubbles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: 4 + Math.random() * 6, speedY: 0.3 + Math.random() * 0.4, type: Math.random() > 0.5 ? 'bubble' : 'heart' });
+        }
+        sakuraPetals = [];
+        for (let i = 0; i < 10; i++) {
+            sakuraPetals.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, size: 3 + Math.random() * 3, speedY: 1 + Math.random() * 1.2, speedX: -0.5 - Math.random() * 0.5, wobble: Math.random() * Math.PI * 2 });
+        }
+        backgroundStars = [];
+        for (let i = 0; i < 35; i++) {
+            backgroundStars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height * 0.7, size: 0.5 + Math.random() * 1.5, alpha: Math.random() });
+        }
+        shootingStars = [];
+    }
+    resize();
+
+    // Audio System with Lo-Fi & Synth-Pop modes
+    let audioCtx = null, musicMode = 0, musicInterval = null; // 0: Off, 1: Lo-Fi, 2: Synth-Pop
+    function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+
+    function playSound(type) {
+        if (!audioCtx) return;
+        try {
+            let osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            let now = audioCtx.currentTime;
+            if (type === 'flap') {
+                osc.frequency.setValueAtTime(340, now); osc.frequency.exponentialRampToValueAtTime(600, now + 0.1);
+                gain.gain.setValueAtTime(0.08, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
+                osc.start(now); osc.stop(now + 0.1);
+            } else if (type === 'score') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, now); osc.frequency.setValueAtTime(659.25, now + 0.08);
+                gain.gain.setValueAtTime(0.06, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
+                osc.start(now); osc.stop(now + 0.15);
+            } else if (type === 'powerup') {
+                osc.frequency.setValueAtTime(587.33, now); osc.frequency.setValueAtTime(880.00, now + 0.1);
+                gain.gain.setValueAtTime(0.08, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now); osc.stop(now + 0.2);
+            } else if (type === 'hit') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(160, now); osc.frequency.linearRampToValueAtTime(70, now + 0.2);
+                gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now); osc.stop(now + 0.2);
+            }
+        } catch (e) {}
+    }
+
+    musicToggleBtn.addEventListener('click', () => {
+        initAudio();
+        musicMode = (musicMode + 1) % 3;
+        if (musicMode === 0) {
+            musicToggleBtn.textContent = '🎵';
+            if (musicInterval) { clearInterval(musicInterval); musicInterval = null; }
+        } else if (musicMode === 1) {
+            musicToggleBtn.textContent = '☕';
+            startMusicLoop('lofi');
+        } else {
+            musicToggleBtn.textContent = '🎹';
+            startMusicLoop('synth');
+        }
+    });
+
+    function startMusicLoop(mode) {
+        if (musicInterval) clearInterval(musicInterval);
+        const lofiNotes = [261.63, 329.63, 392.00, 493.88];
+        const synthNotes = [440.00, 554.37, 659.25, 880.00];
+        let index = 0;
+        musicInterval = setInterval(() => {
+            if (!audioCtx || musicMode === 0) return;
+            try {
+                let osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+                let notes = mode === 'lofi' ? lofiNotes : synthNotes;
+                osc.type = mode === 'lofi' ? 'sine' : 'sawtooth';
+                osc.frequency.setValueAtTime(notes[index++ % notes.length], audioCtx.currentTime);
+                gain.gain.setValueAtTime(mode === 'lofi' ? 0.04 : 0.02, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + (mode === 'lofi' ? 0.6 : 0.3));
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(); osc.stop(audioCtx.currentTime + (mode === 'lofi' ? 0.6 : 0.3));
+            } catch(e){}
+        }, mode === 'lofi' ? 600 : 300);
+    }
+
+    function triggerCompanionReaction() {
+        petReactionTimer = 45;
+        for (let i = 0; i < 5; i++) {
+            particles.push({
+                x: petPos.x, y: petPos.y,
+                vx: (Math.random() - 0.5) * 4, vy: -1 - Math.random() * 3,
+                color: '#f472b6', size: 4 + Math.random() * 3, life: 30, type: 'heart'
+            });
+        }
+    }
+
+    function triggerFlap() {
+        if (gameState === STATE_PLAYING) {
+            initAudio();
+            bird.velocity = lift;
+            playSound('flap');
+            let t = trails[currentTrailIndex];
+            for (let i = 0; i < 4; i++) {
+                particles.push({
+                    x: bird.x - 12, y: bird.y + 10,
+                    vx: (Math.random() - 0.5) * 3, vy: (Math.random() - 0.5) * 3 + 2,
+                    color: t === 'rainbow' ? `hsl(${Math.random() * 360}, 100%, 75%)` : (t === 'hearts' ? '#f472b6' : (t === 'notes' ? '#c084fc' : '#fef08a')),
+                    size: 3 + Math.random() * 3, life: 22, type: t === 'hearts' ? 'heart' : (t === 'notes' ? 'note' : 'circle')
+                });
+            }
+        }
+    }
+    window.addEventListener('keydown', (e) => { if (e.code === 'Space') { e.preventDefault(); triggerFlap(); } });
+    canvas.addEventListener('pointerdown', (e) => { e.preventDefault(); triggerFlap(); });
+
+    function startGame() {
+        initAudio();
+        score = 0;
+        currentScoreEl.textContent = score;
+        bird.y = canvas.height / 2;
+        bird.velocity = 0;
+        bird.rotation = 0;
+        bird.hasShield = false;
+        bird.magnetTimer = 0;
+        petPos = { x: 45, y: canvas.height / 2 };
+        pipes = []; items = []; pipeTimer = 0; particles = []; floatingPopups = [];
+        consecutiveStars = 0; feverTimer = 0; petReactionTimer = 0; bgOffset = 0;
+        
+        menuScreen.classList.add('hidden');
+        pauseScreen.classList.add('hidden');
+        gameOverScreen.classList.add('hidden');
+        hud.classList.remove('hidden');
+        gameState = STATE_PLAYING;
+    }
+
+    playBtn.addEventListener('click', startGame);
+    restartBtn.addEventListener('click', startGame);
+    pauseBtn.addEventListener('click', () => { if (gameState === STATE_PLAYING) { gameState = STATE_PAUSED; pauseScreen.classList.remove('hidden'); } });
+    resumeBtn.addEventListener('click', () => { pauseScreen.classList.add('hidden'); gameState = STATE_PLAYING; });
+
+    const goToMenu = () => {
+        pauseScreen.classList.add('hidden');
+        gameOverScreen.classList.add('hidden');
+        hud.classList.add('hidden');
+        menuScreen.classList.remove('hidden');
+        menuBestEl.textContent = bestScore;
+        totalStarsCollected = parseInt(localStorage.getItem('amals_flight_total_stars') || '0');
+        totalStarsDisplayEl.textContent = totalStarsCollected;
+        gameState = STATE_MENU;
+    };
+    pauseMenuBtn.addEventListener('click', goToMenu);
+    gameOverMenuBtn.addEventListener('click', goToMenu);
+
+    function spawnPipe() {
+        let minHeight = 85, maxHeight = canvas.height - pipeGap - 120;
+        let topHeight = Math.floor(Math.random() * (maxHeight - minHeight + 1)) + minHeight;
+        let isDrifting = Math.random() < 0.35;
+        pipes.push({ x: canvas.width + 20, top: topHeight, bottom: canvas.height - topHeight - pipeGap, passed: false, isDrifting: isDrifting, driftDir: 1, driftOffset: 0 });
+
+        let itemRand = Math.random();
+        if (itemRand < 0.35) {
+            items.push({ x: canvas.width + 20 + pipeWidth / 2, y: topHeight + pipeGap / 2, type: 'star', radius: 14, collected: false });
+        } else if (itemRand < 0.48) {
+            items.push({ x: canvas.width + 20 + pipeWidth / 2, y: topHeight + pipeGap / 2, type: 'shield', radius: 14, collected: false });
+        } else if (itemRand < 0.60) {
+            items.push({ x: canvas.width + 20 + pipeWidth / 2, y: topHeight + pipeGap / 2, type: 'magnet', radius: 14, collected: false });
+        } else if (itemRand < 0.66) {
+            items.push({ x: canvas.width + 20 + pipeWidth / 2, y: topHeight + pipeGap / 2, type: 'portal', radius: 18, collected: false });
+        }
+    }
+
+    function checkMilestones(newScore) {
+        let msgs = [
+            { score: 5, text: "Cute! (๑>◡<๑)" },
+            { score: 10, text: "Sparkly! ✨" },
+            { score: 20, text: "Kawaii! 💖" },
+            { score: 35, text: "Slay! 🚀" }
+        ];
+        let found = msgs.find(m => m.score === newScore);
+        if (found) {
+            floatingPopups.push({ text: found.text, x: canvas.width / 2, y: canvas.height / 3, alpha: 1.0, life: 55 });
+            bird.isBlinking = true; setTimeout(() => bird.isBlinking = false, 400);
+        }
+    }
+
+    function update() {
+        if (gameState === STATE_PLAYING) {
+            bird.velocity += gravity;
+            bird.y += bird.velocity;
+            bird.rotation = Math.min(Math.PI / 4, Math.max(-Math.PI / 4, bird.velocity * 0.08));
+
+            bird.blinkTimer++;
+            if (bird.blinkTimer > 180) { bird.isBlinking = true; if (bird.blinkTimer > 200) bird.blinkTimer = 0; } else { bird.isBlinking = false; }
+
+            if (feverTimer > 0) feverTimer--;
+            if (petReactionTimer > 0) petReactionTimer--;
+            if (bird.magnetTimer > 0) bird.magnetTimer--;
+
+            let targetPetX = bird.x - 42, targetPetY = bird.y + 12 + Math.sin(Date.now() / 140) * 8;
+            petPos.x += (targetPetX - petPos.x) * 0.15;
+            petPos.y += (targetPetY - petPos.y) * 0.15;
+
+            bgOffset -= gameSpeed * 0.25;
+            if (bgOffset <= -canvas.width) bgOffset = 0;
+
+            if (bird.magnetTimer > 0) {
+                for (let item of items) {
+                    if (!item.collected && item.type === 'star') {
+                        let dx = bird.x - item.x, dy = bird.y - item.y;
+                        let dist = Math.hypot(dx, dy);
+                        if (dist < 180) { item.x += dx * 0.12; item.y += dy * 0.12; }
+                    }
+                }
+            }
+
+            let t = trails[currentTrailIndex];
+            particles.push({
+                x: bird.x - 14, y: bird.y + (Math.random() - 0.5) * 8,
+                vx: -1 - Math.random(), vy: (Math.random() - 0.5) * 1,
+                color: feverTimer > 0 ? `hsl(${Math.random()*360}, 100%, 80%)` : (t === 'rainbow' ? '#f472b6' : '#f472b6'),
+                size: 2 + Math.random() * 3, life: 18, type: t === 'hearts' ? 'heart' : 'circle'
+            });
+            if (particles.length > 70) particles.shift();
+
+            pipeTimer++;
+            if (pipeTimer > 105) { spawnPipe(); pipeTimer = 0; }
+
+            for (let i = pipes.length - 1; i >= 0; i--) {
+                pipes[i].x -= gameSpeed;
+                if (pipes[i].isDrifting) {
+                    pipes[i].driftOffset += 0.04 * pipes[i].driftDir;
+                    if (Math.abs(pipes[i].driftOffset) > 35) pipes[i].driftDir *= -1;
+                }
+                if (!pipes[i].passed && pipes[i].x + pipeWidth < bird.x) {
+                    pipes[i].passed = true;
+                    score += (feverTimer > 0 ? 2 : 1);
+                    currentScoreEl.textContent = score;
+                    playSound('score');
+                    checkMilestones(score);
+                }
+                if (pipes[i].x + pipeWidth < -50) pipes.splice(i, 1);
+            }
+
+            for (let i = items.length - 1; i >= 0; i--) {
+                items[i].x -= gameSpeed;
+                if (!items[i].collected) {
+                    let dist = Math.hypot(bird.x - items[i].x, bird.y - items[i].y);
+                    if (dist < bird.radius + items[i].radius) {
+                        items[i].collected = true;
+                        playSound('powerup');
+                        petReactionTimer = 30;
+
+                        if (items[i].type === 'star') {
+                            consecutiveStars++;
+                            score += (feverTimer > 0 ? 6 : 3);
+                            totalStarsCollected++;
+                            localStorage.setItem('amals_flight_total_stars', totalStarsCollected);
+                            currentScoreEl.textContent = score;
+                            checkMilestones(score);
+                            if (consecutiveStars >= 3) {
+                                feverTimer = 180; consecutiveStars = 0;
+                                floatingPopups.push({ text: "🌈 FEVER x2! 🌈", x: canvas.width / 2, y: canvas.height / 2.5, alpha: 1.0, life: 60 });
+                            }
+                        } else if (items[i].type === 'shield') {
+                            bird.hasShield = true;
+                        } else if (items[i].type === 'magnet') {
+                            bird.magnetTimer = 240;
+                            floatingPopups.push({ text: "🧲 MAGNET! 🧲", x: canvas.width / 2, y: canvas.height / 2.5, alpha: 1.0, life: 60 });
+                        } else if (items[i].type === 'portal') {
+                            score += 10; totalStarsCollected += 5;
+                            localStorage.setItem('amals_flight_total_stars', totalStarsCollected);
+                            currentScoreEl.textContent = score;
+                            floatingPopups.push({ text: "🌀 PORTAL WARP! +10 🌀", x: canvas.width / 2, y: canvas.height / 2.5, alpha: 1.0, life: 60 });
+                            for(let j=0; j<15; j++) {
+                                particles.push({ x: bird.x, y: bird.y, vx: (Math.random()-0.5)*8, vy: (Math.random()-0.5)*8, color: '#a7f3d0', size: 5, life: 40, type: 'star' });
+                            }
+                        }
+                    }
+                }
+                if (items[i].x < -50 || items[i].collected) items.splice(i, 1);
+            }
+
+            if (bird.y - bird.radius <= 0 || bird.y + bird.radius >= canvas.height - 30) {
+                if (!handleCrash()) return;
+            }
+            for (let pipe of pipes) {
+                let currentTop = pipe.top + (pipe.isDrifting ? pipe.driftOffset : 0);
+                let currentBottom = pipe.bottom - (pipe.isDrifting ? pipe.driftOffset : 0);
+                if (bird.x + bird.radius > pipe.x && bird.x - bird.radius < pipe.x + pipeWidth) {
+                    if (bird.y - bird.radius < currentTop || bird.y + bird.radius > canvas.height - currentBottom) {
+                        if (!handleCrash()) return;
+                    }
+                }
+            }
+        } else {
+            bgOffset -= 0.5;
+            if (bgOffset <= -canvas.width) bgOffset = 0;
+        }
+
+        for (let b of ambientBubbles) {
+            b.y -= b.speedY;
+            if (b.y < -20) { b.y = canvas.height + 20; b.x = Math.random() * canvas.width; }
+        }
+        for (let s of sakuraPetals) {
+            s.y += s.speedY; s.wobble += 0.02; s.x += s.speedX + Math.sin(s.wobble) * 0.4;
+            if (s.y > canvas.height + 10) { s.y = -10; s.x = Math.random() * canvas.width; }
+        }
+        if (themes[currentThemeIndex] === 'midnight' && Math.random() < 0.02) {
+            shootingStars.push({ x: Math.random() * canvas.width, y: 0, vx: -4, vy: 4, life: 40 });
+        }
+        for (let ss of shootingStars) { ss.x += ss.vx; ss.y += ss.vy; ss.life--; }
+        shootingStars = shootingStars.filter(ss => ss.life > 0);
+
+        for (let p of particles) { p.x += p.vx; p.y += p.vy; p.life--; }
+        particles = particles.filter(p => p.life > 0);
+
+        for (let pop of floatingPopups) { pop.y -= 0.5; pop.life--; pop.alpha = pop.life / 50; }
+        floatingPopups = floatingPopups.filter(pop => pop.life > 0);
+    }
+
+    function handleCrash() {
+        if (bird.hasShield) {
+            bird.hasShield = false; bird.velocity = -5;
+            playSound('powerup');
+            return false;
+        }
+        playSound('hit');
+        gameState = STATE_GAMEOVER;
+        hud.classList.add('hidden');
+        gameOverScreen.classList.remove('hidden');
+        finalScoreEl.textContent = score;
+        if (score > bestScore) {
+            bestScore = score;
+            localStorage.setItem('amals_flight_best', bestScore);
+            newBestContainer.innerHTML = `<div class="new-best-badge">✨ NEW BEST! ✨</div>`;
+        } else {
+            newBestContainer.innerHTML = '';
+        }
+        finalBestEl.textContent = bestScore;
+        return true;
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let activeTheme = themes[currentThemeIndex];
+
+        let skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        if (feverTimer > 0) {
+            skyGradient.addColorStop(0, `hsl(${(Date.now() / 15) % 360}, 80%, 85%)`);
+            skyGradient.addColorStop(1, `hsl(${((Date.now() / 15) + 120) % 360}, 80%, 75%)`);
+        } else if (activeTheme === 'mint') {
+            skyGradient.addColorStop(0, '#a7f3d0'); skyGradient.addColorStop(1, '#e0f2fe');
+        } else if (activeTheme === 'sunset') {
+            skyGradient.addColorStop(0, '#fed7aa'); skyGradient.addColorStop(0.5, '#fbcfe8'); skyGradient.addColorStop(1, '#e9d5ff');
+        } else if (activeTheme === 'midnight') {
+            skyGradient.addColorStop(0, '#1e1b4b'); skyGradient.addColorStop(1, '#6366f1');
+        } else {
+            skyGradient.addColorStop(0, '#fbcfe8'); skyGradient.addColorStop(1, '#fed7aa');
+        }
+        ctx.fillStyle = skyGradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        if (activeTheme === 'midnight') {
+            ctx.fillStyle = 'rgba(255,255,255,0.8)';
+            for (let s of backgroundStars) {
+                ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2); ctx.fill();
+            }
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.beginPath(); ctx.arc(canvas.width - 60, 80, 24, 0, Math.PI * 2); ctx.fill();
+
+            ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5;
+            for (let ss of shootingStars) {
+                ctx.beginPath(); ctx.moveTo(ss.x, ss.y); ctx.lineTo(ss.x + 15, ss.y - 15); ctx.stroke();
+            }
+        }
+
+        ctx.fillStyle = activeTheme === 'midnight' ? 'rgba(67, 56, 202, 0.4)' : 'rgba(255, 255, 255, 0.25)';
+        ctx.beginPath();
+        ctx.moveTo(0, canvas.height);
+        for (let i = 0; i <= 2; i++) {
+            let ox = (bgOffset + i * canvas.width);
+            ctx.bezierCurveTo(ox + 100, canvas.height - 150, ox + 250, canvas.height - 50, ox + canvas.width, canvas.height - 100);
+        }
+        ctx.lineTo(canvas.width, canvas.height);
+        ctx.fill();
+
+        for (let b of ambientBubbles) {
+            if (b.type === 'heart') {
+                ctx.fillStyle = 'rgba(244, 114, 182, 0.4)';
+                ctx.beginPath(); ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2); ctx.fill();
+            } else {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+                ctx.beginPath(); ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+
+        if (activeTheme !== 'midnight') {
+            ctx.fillStyle = '#f9a8d4';
+            for (let s of sakuraPetals) {
+                ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(s.wobble);
+                ctx.beginPath(); ctx.ellipse(0, 0, s.size, s.size/2, 0, 0, Math.PI*2); ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        for (let pipe of pipes) {
+            let currentTop = pipe.top + (pipe.isDrifting ? pipe.driftOffset : 0);
+            let currentBottom = pipe.bottom - (pipe.isDrifting ? pipe.driftOffset : 0);
+
+            ctx.fillStyle = activeTheme === 'midnight' ? 'rgba(165, 180, 252, 0.85)' : 'rgba(255, 255, 255, 0.85)';
+            ctx.beginPath(); ctx.roundRect(pipe.x, 0, pipeWidth, currentTop, [0, 0, 16, 16]); ctx.fill();
+            ctx.beginPath(); ctx.roundRect(pipe.x, canvas.height - currentBottom, pipeWidth, currentBottom, [16, 16, 0, 0]); ctx.fill();
+
+            ctx.strokeStyle = pipe.isDrifting ? '#f472b6' : 'rgba(255, 255, 255, 0.6)';
+            ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.roundRect(pipe.x + 4, 4, pipeWidth - 8, currentTop - 8, [0, 0, 12, 12]); ctx.stroke();
+            ctx.beginPath(); ctx.roundRect(pipe.x + 4, canvas.height - currentBottom + 4, pipeWidth - 8, currentBottom - 8, [12, 12, 0, 0]); ctx.stroke();
+        }
+
+        for (let item of items) {
+            ctx.save(); ctx.translate(item.x, item.y);
+            if (item.type === 'star') {
+                ctx.fillStyle = '#fef08a';
+                ctx.beginPath();
+                for (let s = 0; s < 5; s++) {
+                    ctx.lineTo(Math.cos((s * 4 * Math.PI) / 5) * item.radius, Math.sin((s * 4 * Math.PI) / 5) * item.radius);
+                    ctx.lineTo(Math.cos(((s * 4 + 2) * Math.PI) / 5) * (item.radius / 2), Math.sin(((s * 4 + 2) * Math.PI) / 5) * (item.radius / 2));
+                }
+                ctx.closePath(); ctx.fill();
+            } else if (item.type === 'shield') {
+                ctx.fillStyle = '#f472b6';
+                ctx.beginPath();
+                let hr = item.radius * 0.8;
+                ctx.arc(-hr/2, -hr/2, hr/2, Math.PI, 0, false);
+                ctx.arc(hr/2, -hr/2, hr/2, Math.PI, 0, false);
+                ctx.lineTo(0, hr); ctx.closePath(); ctx.fill();
+            } else if (item.type === 'magnet') {
+                ctx.fillStyle = '#c084fc';
+                ctx.beginPath(); ctx.arc(0, 0, item.radius, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = '#ffffff'; ctx.font = 'bold 12px Quicksand'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('🧲', 0, 0);
+            } else if (item.type === 'portal') {
+                ctx.strokeStyle = `hsl(${(Date.now()/10)%360}, 100%, 75%)`; ctx.lineWidth = 4;
+                ctx.beginPath(); ctx.arc(0, 0, item.radius, 0, Math.PI * 2); ctx.stroke();
+                ctx.fillStyle = '#ffffff'; ctx.font = 'bold 12px Quicksand'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('🌀', 0, 0);
+            }
+            ctx.restore();
+        }
+
+        let groundColor = '#f472b6';
+        if (activeTheme === 'mint') groundColor = '#0d9488';
+        if (activeTheme === 'sunset') groundColor = '#c084fc';
+        if (activeTheme === 'midnight') groundColor = '#3730a3';
+        ctx.fillStyle = groundColor; ctx.fillRect(0, canvas.height - 30, canvas.width, 30);
+        ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.fillRect(0, canvas.height - 30, canvas.width, 4);
+
+        for (let p of particles) {
+            if (p.type === 'heart') {
+                ctx.fillStyle = p.color; ctx.font = '12px Quicksand'; ctx.fillText('💖', p.x, p.y);
+            } else if (p.type === 'note') {
+                ctx.fillStyle = p.color; ctx.font = '12px Quicksand'; ctx.fillText('🎵', p.x, p.y);
+            } else {
+                ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+        for (let pop of floatingPopups) {
+            ctx.save();
+            ctx.font = 'bold 20px Quicksand';
+            ctx.fillStyle = `rgba(255, 255, 255, ${pop.alpha})`;
+            ctx.strokeStyle = `rgba(219, 39, 119, ${pop.alpha})`;
+            ctx.lineWidth = 4; ctx.textAlign = 'center';
+            ctx.strokeText(pop.text, pop.x, pop.y);
+            ctx.fillText(pop.text, pop.x, pop.y);
+            ctx.restore();
+        }
+
+        if (gameState !== STATE_MENU) {
+            drawPet(petPos.x, petPos.y, pets[currentPetIndex], petReactionTimer > 0);
+
+            ctx.save();
+            ctx.translate(bird.x, bird.y); ctx.rotate(bird.rotation);
+
+            if (bird.hasShield) {
+                ctx.strokeStyle = '#6ee7b7'; ctx.lineWidth = 3;
+                ctx.beginPath(); ctx.arc(0, 0, bird.radius + 7, 0, Math.PI * 2); ctx.stroke();
+            }
+            if (bird.magnetTimer > 0) {
+                ctx.strokeStyle = '#c084fc'; ctx.lineWidth = 3;
+                ctx.beginPath(); ctx.arc(0, 0, bird.radius + 12, 0, Math.PI * 2); ctx.stroke();
+            }
+
+            ctx.beginPath(); ctx.arc(0, 0, bird.radius, 0, Math.PI * 2); ctx.clip();
+            if (characterImg.complete && characterImg.naturalWidth !== 0) {
+                ctx.drawImage(characterImg, -bird.radius, -bird.radius, bird.radius * 2, bird.radius * 2);
+            } else {
+                ctx.fillStyle = '#f472b6'; ctx.fill();
+                ctx.fillStyle = '#ffffff'; ctx.font = 'bold 20px Quicksand'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('A', 0, 0);
+            }
+
+            if (bird.isBlinking) {
+                ctx.fillStyle = 'rgba(0,0,0,0.6)';
+                ctx.fillRect(-12, -8, 24, 6);
+            }
+            ctx.restore();
+            drawHat(bird.x, bird.y, bird.radius, bird.rotation, hats[currentHatIndex]);
+        }
+    }
+
+    function drawPet(px, py, petType, isExcited) {
+        ctx.save(); ctx.translate(px, py);
+        let scale = isExcited ? 1.25 : 1.0;
+        ctx.scale(scale, scale);
+
+        if (petType === 'star') {
+            ctx.fillStyle = '#fef08a'; ctx.beginPath(); ctx.arc(0, 0, 10, 0, Math.PI * 2); ctx.fill();
+        } else if (petType === 'bunny') {
+            ctx.fillStyle = '#ffffff'; ctx.strokeStyle = '#f472b6'; ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.arc(0, 0, 10, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        } else if (petType === 'cloud') {
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath(); ctx.arc(0, 0, 11, 0, Math.PI * 2); ctx.arc(7, -3, 7, 0, Math.PI * 2); ctx.fill();
+        } else if (petType === 'ghost') {
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath(); ctx.arc(0, -2, 10, Math.PI, 0, false); ctx.lineTo(10, 10); ctx.lineTo(-10, 10); ctx.closePath(); ctx.fill();
+        }
+        if (isExcited) { ctx.font = '12px Quicksand'; ctx.fillText('💖', -6, -16); }
+        ctx.restore();
+    }
+
+    function drawHat(bx, by, radius, rot, hatType) {
+        if (hatType === 'none') return;
+        ctx.save(); ctx.translate(bx, by); ctx.rotate(rot);
+        if (hatType === 'crown') {
+            ctx.fillStyle = '#fde047'; ctx.strokeStyle = '#ca8a04'; ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.moveTo(-12, -radius - 2); ctx.lineTo(-16, -radius - 15); ctx.lineTo(0, -radius - 17); ctx.lineTo(16, -radius - 15); ctx.lineTo(12, -radius - 2); ctx.closePath(); ctx.fill(); ctx.stroke();
+        } else if (hatType === 'bunny') {
+            ctx.fillStyle = '#ffffff'; ctx.strokeStyle = '#f472b6'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.ellipse(-10, -radius - 15, 4, 12, -0.2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            ctx.beginPath(); ctx.ellipse(10, -radius - 15, 4, 12, 0.2, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        } else if (hatType === 'flowers') {
+            ctx.fillStyle = '#f472b6';
+            for (let i = -1; i <= 1; i++) { ctx.beginPath(); ctx.arc(i * 9, -radius - 5, 4.5, 0, Math.PI * 2); ctx.fill(); }
+            ctx.fillStyle = '#fef08a'; ctx.beginPath(); ctx.arc(0, -radius - 5, 3, 0, Math.PI * 2); ctx.fill();
+        } else if (hatType === 'goggles') {
+            ctx.strokeStyle = '#475569'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.arc(-8, -4, 8, 0, Math.PI * 2); ctx.arc(8, -4, 8, 0, Math.PI * 2); ctx.stroke();
+        } else if (hatType === 'angel') {
+            ctx.fillStyle = '#ffffff'; ctx.strokeStyle = '#f6d860'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.ellipse(-14, -radius, 10, 5, -0.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            ctx.beginPath(); ctx.ellipse(14, -radius, 10, 5, 0.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+        } else if (hatType === 'cat') {
+            ctx.fillStyle = '#f472b6';
+            ctx.beginPath(); ctx.moveTo(-14, -radius); ctx.lineTo(-20, -radius - 16); ctx.lineTo(-6, -radius - 8); ctx.closePath(); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(14, -radius); ctx.lineTo(20, -radius - 16); ctx.lineTo(6, -radius - 8); ctx.closePath(); ctx.fill();
+        }
+        ctx.restore();
+    }
+
+    snapshotBtn.addEventListener('click', () => {
+        let snapCanvas = document.createElement('canvas');
+        snapCanvas.width = 400; snapCanvas.height = 500;
+        let sCtx = snapCanvas.getContext('2d');
+        let activeTheme = themes[currentThemeIndex];
+
+        let grad = sCtx.createLinearGradient(0, 0, 0, 500);
+        grad.addColorStop(0, activeTheme === 'midnight' ? '#1e1b4b' : '#fbcfe8');
+        grad.addColorStop(1, activeTheme === 'midnight' ? '#6366f1' : '#fed7aa');
+        sCtx.fillStyle = grad; sCtx.fillRect(0, 0, 400, 500);
+
+        sCtx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+        sCtx.roundRect(30, 30, 340, 440, 24); sCtx.fill();
+        sCtx.strokeStyle = activeTheme === 'midnight' ? '#6366f1' : '#f472b6';
+        sCtx.lineWidth = 4; sCtx.stroke();
+
+        // Sticker Stamps in Photo Booth
+        sCtx.font = '28px Quicksand';
+        sCtx.fillText('🌸', 50, 75);
+        sCtx.fillText('✨', 320, 75);
+        sCtx.fillText('💖', 50, 435);
+        sCtx.fillText('⭐', 320, 435);
+
+        sCtx.fillStyle = activeTheme === 'midnight' ? '#4338ca' : '#db2777';
+        sCtx.font = 'bold 26px Quicksand'; sCtx.textAlign = 'center';
+        sCtx.fillText("Amal's Flight 🌸", 200, 75);
+
+        sCtx.save(); sCtx.beginPath(); sCtx.arc(200, 160, 50, 0, Math.PI * 2);
+        sCtx.lineWidth = 4; sCtx.strokeStyle = activeTheme === 'midnight' ? '#818cf8' : '#f472b6'; sCtx.stroke(); sCtx.clip();
+        if (characterImg.complete && characterImg.naturalWidth !== 0) {
+            sCtx.drawImage(characterImg, 150, 110, 100, 100);
+        } else {
+            sCtx.fillStyle = '#f472b6'; sCtx.fillRect(150, 110, 100, 100);
+        }
+        sCtx.restore();
+
+        sCtx.fillStyle = '#4b5563'; sCtx.font = 'bold 18px Quicksand';
+        sCtx.fillText(`Final Score: ${score}`, 200, 250);
+        sCtx.fillText(`Best Score: ${bestScore}`, 200, 280);
+
+        sCtx.fillStyle = activeTheme === 'midnight' ? '#4f46e5' : '#db2777'; sCtx.font = 'bold 13px Quicksand';
+        sCtx.fillText(`Hat: ${hatNames[hats[currentHatIndex]]} | Pet: ${petNames[pets[currentPetIndex]]}`, 200, 330);
+        sCtx.fillText(`Trail: ${trailNames[trails[currentTrailIndex]]} | Theme: ${themeNames[themes[currentThemeIndex]]}`, 200, 360);
+
+        sCtx.fillStyle = '#9ca3af'; sCtx.font = '13px Quicksand';
+        sCtx.fillText('Made with 💖 for Amal', 200, 425);
+
+        let link = document.createElement('a');
+        link.download = `Amals-Flight-Score-${score}.png`;
+        link.href = snapCanvas.toDataURL('image/png'); link.click();
+    });
+
+    function loop() {
+        update(); draw(); requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+</script>
+
+</body>
+</html>
